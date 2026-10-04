@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Simpeg — Lapas Kelas IIA Palopo</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect x='20' y='15' width='60' height='70' fill='%232EC4B6' stroke='%230B2545' stroke-width='2' rx='5'/><circle cx='50' cy='40' r='15' fill='%230B2545'/><path d='M30 70 Q50 55 70 70' fill='none' stroke='%230B2545' stroke-width='4' stroke-linecap='round'/></svg>" type="image/svg+xml">
+<style>
+  :root{
+    --navy-deep:#081426;
+    --navy:#0B2545;
+    --navy-soft:#13315C;
+    --mist:#8DA9C4;
+    --accent:#2EC4B6;
+    --accent-bright:#5EEAD4;
+    --paper:#EAF2F5;
+  }
+  *{box-sizing:border-box;}
+  html,body{
+    margin:0;padding:0;height:100%;overflow:hidden;
+    font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+    background:var(--navy-deep);
+  }
+  .iframe-container{position:relative;width:100%;height:100vh;}
+  iframe{width:100%;height:100%;border:none;display:block;background:var(--paper);}
+
+  .loader-wrapper{
+    position:absolute;inset:0;
+    display:flex;align-items:center;justify-content:center;
+    background:
+      radial-gradient(circle at 50% 30%, rgba(46,196,182,0.12), transparent 60%),
+      linear-gradient(160deg, var(--navy-deep) 0%, var(--navy) 55%, var(--navy-soft) 100%);
+    z-index:10;
+    transition:opacity .6s ease, visibility .6s ease;
+  }
+  .loader-wrapper.hidden{opacity:0;visibility:hidden;pointer-events:none;}
+
+  .loader-content{
+    width:min(90vw, 420px);
+    display:flex;flex-direction:column;align-items:center;
+    text-align:center;
+  }
+
+  .brand{
+    display:flex;align-items:center;gap:10px;
+    margin-bottom:30px;
+  }
+  .brand-dot{
+    width:10px;height:10px;border-radius:50%;
+    background:var(--accent-bright);
+    box-shadow:0 0 12px 2px rgba(94,234,212,.7);
+    animation:blink 1.6s ease-in-out infinite;
+  }
+  .brand-name{
+    color:var(--paper);
+    font-size:14px;
+    letter-spacing:.28em;
+    text-transform:uppercase;
+    font-weight:600;
+    opacity:.85;
+  }
+
+  /* --- Dashboard / Data Sync Monitor Theme --- */
+  .monitor{
+    position:relative;
+    width:100%;
+    height:120px;
+    border:1px solid rgba(141,169,196,0.22);
+    border-radius:14px;
+    background:linear-gradient(180deg, rgba(8,20,38,0.7), rgba(8,20,38,0.9));
+    overflow:hidden;
+    box-shadow:inset 0 0 40px rgba(0,0,0,0.35);
+    margin-bottom:28px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+  }
+  .grid-lines{
+    position:absolute;inset:0;
+    background-image:
+      linear-gradient(rgba(141,169,196,0.06) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(141,169,196,0.06) 1px, transparent 1px);
+    background-size:24px 24px;
+  }
+
+  /* Scanner Line Animation */
+  .scanner-bar {
+    position: absolute;
+    top: 0; bottom: 0;
+    width: 2px;
+    background: linear-gradient(180deg, transparent, var(--accent-bright), transparent);
+    box-shadow: 0 0 15px var(--accent-bright);
+    animation: scan 2.4s ease-in-out infinite alternate;
+  }
+  @keyframes scan {
+    0% { left: 10%; }
+    100% { left: 90%; }
+  }
+
+  /* Simulated Dashboard Bars/Stats inside Monitor */
+  .dash-stats {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    gap: 16px;
+    align-items: flex-end;
+    height: 60px;
+  }
+  .stat-bar {
+    width: 22px;
+    background: rgba(141,169,196,0.2);
+    border-radius: 4px 4px 0 0;
+    overflow: hidden;
+    position: relative;
+  }
+  .stat-bar::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    background: var(--accent);
+    height: var(--h);
+    animation: bar-grow 2s ease infinite alternate;
+  }
+  .stat-bar:nth-child(1)::after { animation-delay: 0.1s; }
+  .stat-bar:nth-child(2)::after { animation-delay: 0.3s; }
+  .stat-bar:nth-child(3)::after { animation-delay: 0.2s; }
+  .stat-bar:nth-child(4)::after { animation-delay: 0.5s; }
+  .stat-bar:nth-child(5)::after { animation-delay: 0.4s; }
+
+  @keyframes bar-grow {
+    0% { height: 20%; }
+    100% { height: 90%; }
+  }
+
+  .status-line{
+    display:flex;align-items:baseline;gap:8px;
+    font-family:'SFMono-Regular','Consolas','Menlo',monospace;
+  }
+  .status-label{
+    color:var(--paper);
+    font-size:15px;
+    font-weight:500;
+    letter-spacing:.02em;
+  }
+  .status-dots{display:inline-flex;gap:4px;}
+  .status-dots span{
+    width:5px;height:5px;border-radius:50%;
+    background:var(--accent);
+    animation:bounce 1.3s infinite ease-in-out;
+  }
+  .status-dots span:nth-child(1){animation-delay:-0.28s;}
+  .status-dots span:nth-child(2){animation-delay:-0.14s;}
+  .status-dots span:nth-child(3){animation-delay:0s;}
+
+  .subtext{
+    margin-top:12px;
+    color:var(--mist);
+    font-size:12.5px;
+    letter-spacing:.03em;
+  }
+
+  @keyframes bounce{
+    0%,80%,100%{opacity:.25;transform:translateY(0);}
+    40%{opacity:1;transform:translateY(-3px);}
+  }
+  @keyframes blink{
+    0%,100%{opacity:1;}
+    50%{opacity:.35;}
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    .scanner-bar, .stat-bar::after {animation:none;}
+    .brand-dot, .status-dots span{animation:none;}
+  }
+</style>
+</head>
+<body>
+  <div class="iframe-container">
+    <div class="loader-wrapper" id="loader">
+      <div class="loader-content">
+        <div class="brand">
+          <span class="brand-dot"></span>
+          <span class="brand-name">Simpeg Lapas Palopo</span>
+        </div>
+
+        <div class="monitor">
+          <div class="grid-lines"></div>
+          <div class="scanner-bar"></div>
+          <!-- Grafik Statistik Pegawai Simulasi -->
+          <div class="dash-stats">
+            <div class="stat-bar" style="--h: 60%;"></div>
+            <div class="stat-bar" style="--h: 85%;"></div>
+            <div class="stat-bar" style="--h: 45%;"></div>
+            <div class="stat-bar" style="--h: 95%;"></div>
+            <div class="stat-bar" style="--h: 70%;"></div>
+          </div>
+        </div>
+
+        <div class="status-line">
+          <span class="status-label">Memuat data pegawai</span>
+          <span class="status-dots"><span></span><span></span><span></span></span>
+        </div>
+        <div class="subtext">Menghubungkan ke sistem database kepegawaian</div>
+      </div>
+    </div>
+
+    <iframe
+      src="https://script.google.com/macros/s/AKfycbxNElqFXBW6KRIkjtsQ_o5zcG1stNi6tfu23AiQUA3YLvmB4lH59j_3Bi-65E70VGI/exec"
+      title="Sistem Informasi Pegawai Lapas Kelas IIA Palopo"
+      onload="document.getElementById('loader').classList.add('hidden');"
+      allowfullscreen>
+    </iframe>
+  </div>
+</body>
+</html>
